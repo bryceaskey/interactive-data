@@ -8,8 +8,8 @@ setwd("C:/Users/Bryce/Documents/interactive-data/hy5-RNASeq/")
 rpkm <- read.csv("data/rpkm.csv")
 colnames(rpkm)[1] <- "locus"
 araport11 <- read.csv("data/Araport11.csv", header=FALSE)
-araport11 <- araport11[, c(1, 3, 13)]
-colnames(araport11) <- c("locus", "name", "aliases")
+araport11 <- araport11[, c(1, 3, 4, 13)]
+colnames(araport11) <- c("locus", "short_name", "name", "aliases")
 rawData <- merge(araport11, rpkm, by="locus", all=TRUE)
 
 # Mutate/transmute functions from dplyr don't work with mean/sd functions
@@ -47,6 +47,7 @@ set_dec_places <- function(num, dec_places){
   
 allData <- data.frame(
   locus=rawData$locus,
+  short_name=rawData$short_name,
   name=rawData$name,
   aliases=rawData$aliases,
   

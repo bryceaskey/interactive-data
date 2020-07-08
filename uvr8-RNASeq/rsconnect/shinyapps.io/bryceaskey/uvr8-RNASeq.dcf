@@ -5,8 +5,8 @@ account: bryceaskey
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 2542667
-bundleId: 3359972
+bundleId: 3364848
 url: https://bryceaskey.shinyapps.io/uvr8-RNASeq/
-when: 1594076129.66747
+when: 1594167083.12682
 asMultiple: FALSE
 asStatic: FALSE

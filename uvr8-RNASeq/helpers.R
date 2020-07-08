@@ -3,7 +3,7 @@
 # Function to create dataframe containing Gene_ID, Gene_name, Gene_family, mean FPKM, and se 
 # FKPM values for only selected genotypes from full RNAseq dataframe
 subsetGenotype <- function(data, selectedSamples){
-  subsetData <- data[, 1:3]
+  subsetData <- data[, 1:4]
   for(genotype in selectedSamples){
     meanColName <- paste(genotype, "_RPKM", sep="")
     meanCol <- data[, colnames(data)==meanColName]
@@ -34,7 +34,7 @@ restoreGenotype <- function(selectedData, allData, selectedSamples){
 convertToTidy <- function(data, selectedSamples){
   tidyData <- NULL
   for(sample in selectedSamples){
-    sampleData <- data[, 1:3]
+    sampleData <- data[, 1:4]
     meanColName <- paste(sample, "_RPKM", sep="")
     meanCol <- data[, colnames(data)==meanColName]
     seColName <- paste(sample, "_SE", sep="")
@@ -50,19 +50,19 @@ convertToTidy <- function(data, selectedSamples){
 # Without standard error - for display in app
 getGenotypeCols <- function(selectedSamples){
   genotypeCols <- vector(mode="numeric", length=0)
-  if(sum(selectedSamples=="Col0_WL")==1){genotypeCols <- append(genotypeCols, 4)}
-  if(sum(selectedSamples=="Col0_WL_UVB6h")==1){genotypeCols <- append(genotypeCols, 6)}
-  if(sum(selectedSamples=="uvr8_WL")==1){genotypeCols <- append(genotypeCols, 8)}
-  if(sum(selectedSamples=="uvr8_WL_UVB6h")==1){genotypeCols <- append(genotypeCols, 10)}
+  if(sum(selectedSamples=="Col0_WL")==1){genotypeCols <- append(genotypeCols, 5)}
+  if(sum(selectedSamples=="uvr8_WL")==1){genotypeCols <- append(genotypeCols, 9)}
+  if(sum(selectedSamples=="Col0_WL_UVB6h")==1){genotypeCols <- append(genotypeCols, 7)}
+  if(sum(selectedSamples=="uvr8_WL_UVB6h")==1){genotypeCols <- append(genotypeCols, 11)}
   return(genotypeCols)
 }
 
 # With standard error - for download
 getGenotypeCols2 <- function(selectedSamples){
   genotypeCols <- vector(mode="numeric", length=0)
-  if(sum(selectedSamples=="Col0_WL")==1){genotypeCols <- append(genotypeCols, c(4, 5))}
-  if(sum(selectedSamples=="Col0_WL_UVB6h")==1){genotypeCols <- append(genotypeCols, c(6, 7))}
-  if(sum(selectedSamples=="uvr8_WL")==1){genotypeCols <- append(genotypeCols, c(8, 9))}
-  if(sum(selectedSamples=="uvr8_WL_UVB6h")==1){genotypeCols <- append(genotypeCols, c(10, 11))}
+  if(sum(selectedSamples=="Col0_WL")==1){genotypeCols <- append(genotypeCols, c(5, 6))}
+  if(sum(selectedSamples=="uvr8_WL")==1){genotypeCols <- append(genotypeCols, c(9, 10))}
+  if(sum(selectedSamples=="Col0_WL_UVB6h")==1){genotypeCols <- append(genotypeCols, c(7, 8))}
+  if(sum(selectedSamples=="uvr8_WL_UVB6h")==1){genotypeCols <- append(genotypeCols, c(11, 12))}
   return(genotypeCols)
 }

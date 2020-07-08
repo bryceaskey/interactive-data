@@ -73,13 +73,13 @@ server <- function(input, output, session){
 
   RD <- reactiveValues(allData=allData, selectedData=NULL)
   
-  output$expressionData <- renderDT(RD$allData[, c(1:3, getGenotypeCols(input$selectedSamples))], 
+  output$expressionData <- renderDT(RD$allData[, c(1:4, getGenotypeCols(input$selectedSamples))], 
     server=TRUE, filter="top", selection="none", class="compact hover",
     options=list(
       sDom="<'top'>rt<'bottom'>ip",
       #autoWidth=TRUE,
       scrollX=TRUE,
-      columnDefs=list(list(width="15%", targets=c(1, 2)), list(width="30%", targets=3)),
+      columnDefs=list(list(width="10%", targets=c(1, 2)), list(width="25%", targets=3), list(width="15%", targets=4)),
       pageLength=15,
       searchCols=default_search_columns,
       stateSave=FALSE)

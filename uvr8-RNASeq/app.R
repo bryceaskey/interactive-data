@@ -45,10 +45,10 @@ ui <- fluidPage(
         label=tags$p(tags$strong("Select samples to plot:")),
         inline=FALSE,
         choices=list("Col-0 white light (Col0_WL)"="Col0_WL",
-                     "Col-0 white light + UVB 6 hours (Col0_WL_UVB6h)"="Col0_WL_UVB6h",
                      "uvr8 white light (uvr8_WL)"="uvr8_WL",
+                     "Col-0 white light + UVB 6 hours (Col0_WL_UVB6h)"="Col0_WL_UVB6h",
                      "uvr8 white light + UVB 6 hours (uvr8_WL_UVB6h)"="uvr8_WL_UVB6h"),
-        selected=c("Col0_WL", "Col0_WL_UVB6h", "uvr8_WL", "uvr8_WL_UVB6h"))
+        selected=c("Col0_WL", "uvr8_WL", "Col0_WL_UVB6h", "uvr8_WL_UVB6h"))
     ),
     column(6,
       plotOutput("genePlot", height="580px")
@@ -74,13 +74,13 @@ server <- function(input, output, session){
 
   RD <- reactiveValues(allData=allData, selectedData=NULL)
   
-  output$expressionData <- renderDT(RD$allData[, c(1:3, getGenotypeCols(input$selectedSamples))], 
+  output$expressionData <- renderDT(RD$allData[, c(1:4, getGenotypeCols(input$selectedSamples))], 
     server=TRUE, filter="top", selection="none", class="compact hover",
     options=list(
       sDom="<'top'>rt<'bottom'>ip",
       #autoWidth=TRUE,
       scrollX=TRUE,
-      columnDefs=list(list(width="15%", targets=c(1, 2)), list(width="30%", targets=3)),
+      columnDefs=list(list(width="10%", targets=c(1, 2)), list(width="25%", targets=3), list(width="15%", targets=4)),
       pageLength=15,
       searchCols=default_search_columns,
       stateSave=FALSE)
@@ -107,7 +107,7 @@ server <- function(input, output, session){
     filename=function(){paste("PRJNA546251_RNAseq", ".pdf", sep="")},
     content=function(file){pdf(file, height=6, width=12)
       plotData <- convertToTidy(RD$selectedData, input$selectedSamples)
-      plotData$sample <- factor(as.character(plotData$sample), levels=c("Col0_WL", "Col0_WL_UVB6h", "uvr8_WL", "uvr8_WL_UVB6h"))
+      plotData$sample <- factor(as.character(plotData$sample), levels=c("Col0_WL", "uvr8_WL", "Col0_WL_UVB6h", "uvr8_WL_UVB6h"))
       plotData$locus <- factor(as.character(plotData$locus), levels=RD$selectedData$locus) ###############################################
       print(ggplot(data=plotData, mapping=aes(x=locus, y=RPKM, fill=sample)) +
               geom_col(position=position_dodge()) +
@@ -168,7 +168,7 @@ server <- function(input, output, session){
       
       plotData <- convertToTidy(RD$selectedData, input$selectedSamples)
       
-      plotData$sample <- factor(as.character(plotData$sample), levels=c("Col0_WL", "Col0_WL_UVB6h", "uvr8_WL", "uvr8_WL_UVB6h"))
+      plotData$sample <- factor(as.character(plotData$sample), levels=c("Col0_WL", "uvr8_WL", "Col0_WL_UVB6h", "uvr8_WL_UVB6h"))
       plotData$locus <- factor(as.character(plotData$locus), levels=RD$selectedData$locus)
       
       ggplot(data=plotData, mapping=aes(x=locus, y=RPKM, fill=sample)) +
