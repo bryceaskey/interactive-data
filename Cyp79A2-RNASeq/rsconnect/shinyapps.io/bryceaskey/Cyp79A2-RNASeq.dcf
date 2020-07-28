@@ -1,0 +1,12 @@
+name: Cyp79A2-RNASeq
+title: Cyp79A2-RNASeq
+username:
+account: bryceaskey
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2575153
+bundleId: 3396508
+url: https://bryceaskey.shinyapps.io/Cyp79A2-RNASeq/
+when: 1594839003.03019
+asMultiple: FALSE
+asStatic: FALSE

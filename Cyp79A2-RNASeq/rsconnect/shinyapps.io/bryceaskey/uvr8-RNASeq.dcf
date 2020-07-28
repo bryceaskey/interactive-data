@@ -1,0 +1,12 @@
+name: uvr8-RNASeq
+title: uvr8-RNASeq
+username:
+account: bryceaskey
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2542667
+bundleId: 3364848
+url: https://bryceaskey.shinyapps.io/uvr8-RNASeq/
+when: 1594167083.12682
+asMultiple: FALSE
+asStatic: FALSE

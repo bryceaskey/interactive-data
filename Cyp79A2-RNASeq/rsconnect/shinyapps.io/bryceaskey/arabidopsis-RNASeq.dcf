@@ -1,0 +1,13 @@
+name: arabidopsis-RNASeq
+title: arabidopsis-RNASeq
+username:
+account: bryceaskey
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2350238
+bundleId: 3203472
+url: https://bryceaskey.shinyapps.io/arabidopsis-RNASeq/
+when: 1590732290.57256
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: loadData.R|data/gene_families_sep_20_09_update.csv|data/gene_families_sep_29_09_update.txt|data/RNAseq_REF5_BB.csv|data/RNAseq_REF5_BB.xlsx
