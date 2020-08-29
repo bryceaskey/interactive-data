@@ -1,5 +1,6 @@
 # Interactive visualization of Arabidopsis RNASeq data
 # Note: before running, working directory must be set to parent directory of app.R
+setwd("C:/Users/bca08_000/Documents/interactive-data/Cyp79A2-RNASeq/")
 
 # Load necessary libraries, functions, and data ----
 #packageList <- c("shiny", "shinyjs", "dplyr", "DT", "ggplot2")
