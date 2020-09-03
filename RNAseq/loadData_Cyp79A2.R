@@ -12,7 +12,7 @@ library(tibble)
 # Specify paths to data files
 justCounts <- "C:/Users/bca08_000/Documents/Cyp79A2-RNAseq/data/Cyp79A2/expression_counts/"
 geneLengths <- "C:/Users/bca08_000/Documents/Cyp79A2-RNAseq/data/Cyp79A2/gene_lengths.txt"
-araport11 <- read.csv("C:/Users/bca08_000/Documents/Cyp79A2-RNAseq/data/Araport11.csv")
+araport11 <- read.csv("C:/Users/bca08_000/Documents/Cyp79A2-RNAseq/data/Araport11.csv", header=FALSE)
 
 # Load gene expression and gene length data
 countFiles <- paste(justCounts, dir(justCounts), sep="")
@@ -65,47 +65,94 @@ tmmAllGenes <- as.data.frame(cpm(expressionData, log=FALSE))
 tmmAllGenes <- rownames_to_column(tmmAllGenes, var="locus")
 
 # Add tmm and fpkm to Cyp79A2 DEG dataframe ----
-tmm_WT <- vector(mode="numeric", length=nrow(Cyp79A2_DEGs))
-tmm_Cyp79A2 <- vector(mode="numeric", length=nrow(Cyp79A2_DEGs))
 fpkm_WT <- vector(mode="numeric", length=nrow(Cyp79A2_DEGs))
+fpkmSE_WT <- vector(mode="numeric", length=nrow(Cyp79A2_DEGs))
+tmm_WT <- vector(mode="numeric", length=nrow(Cyp79A2_DEGs))
+tmmSE_WT <- vector(mode="numeric", length=nrow(Cyp79A2_DEGs))
 fpkm_Cyp79A2 <- vector(mode="numeric", length=nrow(Cyp79A2_DEGs))
+fpkmSE_Cyp79A2 <- vector(mode="numeric", length=nrow(Cyp79A2_DEGs))
+tmm_Cyp79A2 <- vector(mode="numeric", length=nrow(Cyp79A2_DEGs))
+tmmSE_Cyp79A2 <- vector(mode="numeric", length=nrow(Cyp79A2_DEGs))
+
 for(i in 1:nrow(Cyp79A2_DEGs)){
   geneLocus <- Cyp79A2_DEGs$locus[i]
-  tmm_WT[i] <- unname(rowMeans(tmmAllGenes[tmmAllGenes$locus==geneLocus, 8:10]))
-  tmm_Cyp79A2[i] <- unname(rowMeans(tmmAllGenes[tmmAllGenes$locus==geneLocus, 2:4]))
+  
   fpkm_WT[i] <- unname(rowMeans(fpkmAllGenes[fpkmAllGenes$locus==geneLocus, 8:10]))
+  fpkmSE_WT[i] <- sd(c(unlist(fpkmAllGenes[fpkmAllGenes$locus==geneLocus, 8:10])))/sqrt(3)
+  
+  tmm_WT[i] <- unname(rowMeans(tmmAllGenes[tmmAllGenes$locus==geneLocus, 8:10]))
+  tmmSE_WT[i] <- sd(c(unlist(tmmAllGenes[tmmAllGenes$locus==geneLocus, 8:10])))/sqrt(3)
+  
   fpkm_Cyp79A2[i] <- unname(rowMeans(fpkmAllGenes[fpkmAllGenes$locus==geneLocus, 2:4]))
+  fpkmSE_Cyp79A2[i] <- sd(c(unlist(fpkmAllGenes[fpkmAllGenes$locus==geneLocus, 2:4])))/sqrt(3)
+  
+  tmm_Cyp79A2[i] <- unname(rowMeans(tmmAllGenes[tmmAllGenes$locus==geneLocus, 2:4]))
+  tmmSE_Cyp79A2[i] <- sd(c(unlist(tmmAllGenes[tmmAllGenes$locus==geneLocus, 2:4])))/sqrt(3)
 }
-Cyp79A2_DEGs$tmm_WT <- tmm_WT
-Cyp79A2_DEGs$tmm_Cyp79A2 <- tmm_Cyp79A2
-Cyp79A2_DEGs$fpkm_WT <- fpkm_WT
-Cyp79A2_DEGs$fpkm_Cyp79A2 <- fpkm_Cyp79A2
 
-Cyp79A2_DEGs <- Cyp79A2_DEGs[c(1:5,13,11,14,12,6,9)]
+Cyp79A2_DEGs$fpkm_WT <- fpkm_WT
+Cyp79A2_DEGs$fpkmSE_WT <- fpkmSE_WT
+
+Cyp79A2_DEGs$tmm_WT <- tmm_WT
+Cyp79A2_DEGs$tmmSE_WT <- tmmSE_WT
+
+Cyp79A2_DEGs$fpkm_Cyp79A2 <- fpkm_Cyp79A2
+Cyp79A2_DEGs$fpkmSE_Cyp79A2 <- fpkmSE_Cyp79A2
+
+Cyp79A2_DEGs$tmm_Cyp79A2 <- tmm_Cyp79A2
+Cyp79A2_DEGs$tmmSE_Cyp79A2 <- tmmSE_Cyp79A2
+
+Cyp79A2_DEGs <- Cyp79A2_DEGs[c(1:5,11:18,6,9)]
 colnames(Cyp79A2_DEGs) <- c("locus", "short_name", "name", "aliases", "length",
-                            "fpkm_WT", "tmm_WT", "fpkm_Cyp79A2", "tmm_Cyp79A2",
-                            "log2FC_Cyp79A2", "pValue_Cyp79A2")
+                         "fpkm_WT", "fpkmSE_WT", "tmm_WT", "tmmSE_WT",
+                         "fpkm_Cyp79A2", "fpkmSE_Cyp79A2", "tmm_Cyp79A2", "tmmSE_Cyp79A2", "log2FC_Cyp79A2", "pValue_Cyp79A2")
 
 # Add tmm and fpkm to PAOx DEG dataframe ----
-tmm_WT <- vector(mode="numeric", length=nrow(PAOx_DEGs))
-tmm_PAOx <- vector(mode="numeric", length=nrow(PAOx_DEGs))
 fpkm_WT <- vector(mode="numeric", length=nrow(PAOx_DEGs))
+fpkmSE_WT <- vector(mode="numeric", length=nrow(PAOx_DEGs))
+tmm_WT <- vector(mode="numeric", length=nrow(PAOx_DEGs))
+tmmSE_WT <- vector(mode="numeric", length=nrow(PAOx_DEGs))
 fpkm_PAOx <- vector(mode="numeric", length=nrow(PAOx_DEGs))
+fpkmSE_PAOx <- vector(mode="numeric", length=nrow(PAOx_DEGs))
+tmm_PAOx <- vector(mode="numeric", length=nrow(PAOx_DEGs))
+tmmSE_PAOx <- vector(mode="numeric", length=nrow(PAOx_DEGs))
+
 for(i in 1:nrow(PAOx_DEGs)){
   geneLocus <- PAOx_DEGs$locus[i]
-  tmm_WT[i] <- unname(rowMeans(tmmAllGenes[tmmAllGenes$locus==geneLocus, 8:10]))
-  tmm_PAOx[i] <- unname(rowMeans(tmmAllGenes[tmmAllGenes$locus==geneLocus, 5:7]))
+  
   fpkm_WT[i] <- unname(rowMeans(fpkmAllGenes[fpkmAllGenes$locus==geneLocus, 8:10]))
+  fpkmSE_WT[i] <- sd(c(unlist(fpkmAllGenes[fpkmAllGenes$locus==geneLocus, 8:10])))/sqrt(3)
+  
+  tmm_WT[i] <- unname(rowMeans(tmmAllGenes[tmmAllGenes$locus==geneLocus, 8:10]))
+  tmmSE_WT[i] <- sd(c(unlist(tmmAllGenes[tmmAllGenes$locus==geneLocus, 8:10])))/sqrt(3)
+  
   fpkm_PAOx[i] <- unname(rowMeans(fpkmAllGenes[fpkmAllGenes$locus==geneLocus, 5:7]))
+  fpkmSE_PAOx[i] <- sd(c(unlist(fpkmAllGenes[fpkmAllGenes$locus==geneLocus, 5:7])))/sqrt(3)
+  
+  tmm_PAOx[i] <- unname(rowMeans(tmmAllGenes[tmmAllGenes$locus==geneLocus, 5:7]))
+  tmmSE_PAOx[i] <- sd(c(unlist(tmmAllGenes[tmmAllGenes$locus==geneLocus, 5:7])))/sqrt(3)
 }
-PAOx_DEGs$tmm_WT <- tmm_WT
-PAOx_DEGs$tmm_PAOx <- tmm_PAOx
-PAOx_DEGs$fpkm_WT <- fpkm_WT
-PAOx_DEGs$fpkm_PAOx <- fpkm_PAOx
 
-PAOx_DEGs <- PAOx_DEGs[c(1,14,12,6,9)]
-colnames(PAOx_DEGs) <- c("locus", "fpkm_PAOx", "tmm_PAOx", "log2FC_PAOx", "pValue_PAOx")
+PAOx_DEGs$fpkm_WT <- fpkm_WT
+PAOx_DEGs$fpkmSE_WT <- fpkmSE_WT
+
+PAOx_DEGs$tmm_WT <- tmm_WT
+PAOx_DEGs$tmmSE_WT <- tmmSE_WT
+
+PAOx_DEGs$fpkm_PAOx <- fpkm_PAOx
+PAOx_DEGs$fpkmSE_PAOx <- fpkmSE_PAOx
+
+PAOx_DEGs$tmm_PAOx <- tmm_PAOx
+PAOx_DEGs$tmmSE_PAOx <- tmmSE_PAOx
+
+PAOx_DEGs <- PAOx_DEGs[c(1,15:18,6,9)]
+colnames(PAOx_DEGs) <- c("locus",
+                         "fpkm_PAOx", "fpkmSE_PAOx", "tmm_PAOx", "tmmSE_PAOx", "log2FC_PAOx", "pValue_PAOx")
+
 
 # Merge DEG dataframes and save as an RDS ----
 DEGs_Cyp79A2 <- merge(Cyp79A2_DEGs, PAOx_DEGs, by="locus")
+for(col in 6:ncol(DEGs_Cyp79A2)){
+  DEGs_Cyp79A2[,col] <- as.numeric(formatC(DEGs_Cyp79A2[,col], width=5, format="G"))
+}
 saveRDS(DEGs_Cyp79A2, file="C:/Users/bca08_000/Documents/interactive-data/RNAseq/data/DEGs_Cyp79A2.rds")
