@@ -1,7 +1,7 @@
 library(shiny)
 library(shinyjs)
 
-#setwd("C:/Users/bca08_000/Documents/interactive-data/RNAseq/")
+setwd("C:/Users/Bryce/Documents/interactive-data/RNAseq/")
 
 library(dplyr)
 library(DT)

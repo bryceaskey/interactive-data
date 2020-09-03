@@ -10,9 +10,9 @@ library(edgeR)
 library(tibble)
 
 # Specify paths to data files
-justCounts <- "C:/Users/bca08_000/Documents/Cyp79A2-RNAseq/data/PRJNA230565/expression_counts/"
-geneLengths <- "C:/Users/bca08_000/Documents/Cyp79A2-RNAseq/data/PRJNA230565/gene_lengths.txt"
-araport11 <- read.csv("C:/Users/bca08_000/Documents/Cyp79A2-RNAseq/data/Araport11.csv")
+justCounts <- "C:/Users/Bryce/Documents/Cyp79A2-RNAseq/data/PRJNA230565/expression_counts/"
+geneLengths <- "C:/Users/Bryce/Documents/Cyp79A2-RNAseq/data/PRJNA230565/gene_lengths.txt"
+araport11 <- read.csv("C:/Users/Bryce/Documents/Cyp79A2-RNAseq/data/Araport11.csv", header=FALSE)
 
 # Load gene expression and gene length data
 countFiles <- paste(justCounts, dir(justCounts), sep="")
@@ -59,25 +59,51 @@ tmmAllGenes <- as.data.frame(cpm(expressionData, log=FALSE))
 tmmAllGenes <- rownames_to_column(tmmAllGenes, var="locus")
 
 # Add tmm and fpkm to NAA treated DEG dataframe
-tmm_control <- vector(mode="numeric", length=nrow(NAA_DEGs))
-tmm_NAA <- vector(mode="numeric", length=nrow(NAA_DEGs))
 fpkm_control <- vector(mode="numeric", length=nrow(NAA_DEGs))
+fpkmSE_control <- vector(mode="numeric", length=nrow(NAA_DEGs))
+tmm_control <- vector(mode="numeric", length=nrow(NAA_DEGs))
+tmmSE_control <- vector(mode="numeric", length=nrow(NAA_DEGs))
 fpkm_NAA <- vector(mode="numeric", length=nrow(NAA_DEGs))
+fpkmSE_NAA <- vector(mode="numeric", length=nrow(NAA_DEGs))
+tmm_NAA <- vector(mode="numeric", length=nrow(NAA_DEGs))
+tmmSE_NAA <- vector(mode="numeric", length=nrow(NAA_DEGs))
+
 for(i in 1:nrow(NAA_DEGs)){
   geneLocus <- NAA_DEGs$locus[i]
-  tmm_control[i] <- unname(rowMeans(tmmAllGenes[tmmAllGenes$locus==geneLocus, 2:3]))
-  tmm_NAA[i] <- unname(rowMeans(tmmAllGenes[tmmAllGenes$locus==geneLocus, 4:5]))
+  
   fpkm_control[i] <- unname(rowMeans(fpkmAllGenes[fpkmAllGenes$locus==geneLocus, 2:3]))
+  fpkmSE_control[i] <- sd(c(unlist(fpkmAllGenes[fpkmAllGenes$locus==geneLocus, 2:3])))/sqrt(2)
+  
+  tmm_control[i] <- unname(rowMeans(tmmAllGenes[tmmAllGenes$locus==geneLocus, 2:3]))
+  tmmSE_control[i] <- sd(c(unlist(tmmAllGenes[tmmAllGenes$locus==geneLocus, 2:3])))/sqrt(2)
+  
   fpkm_NAA[i] <- unname(rowMeans(fpkmAllGenes[fpkmAllGenes$locus==geneLocus, 4:5]))
+  fpkmSE_NAA[i] <- sd(c(unlist(fpkmAllGenes[fpkmAllGenes$locus==geneLocus, 4:5])))/sqrt(2)
+  
+  tmm_NAA[i] <- unname(rowMeans(tmmAllGenes[tmmAllGenes$locus==geneLocus, 4:5]))
+  tmmSE_NAA[i] <- sd(c(unlist(tmmAllGenes[tmmAllGenes$locus==geneLocus, 4:5])))/sqrt(2)
 }
-NAA_DEGs$tmm_control <- tmm_control
-NAA_DEGs$tmm_NAA <- tmm_NAA
+
 NAA_DEGs$fpkm_control <- fpkm_control
+NAA_DEGs$fpkmSE_control <- fpkmSE_control
+
+NAA_DEGs$tmm_control <- tmm_control
+NAA_DEGs$tmmSE_control <- tmmSE_control
+
 NAA_DEGs$fpkm_NAA <- fpkm_NAA
+NAA_DEGs$fpkmSE_NAA <- fpkmSE_NAA
 
-NAA_DEGs <- NAA_DEGs[c(1:5,13,11,14,12,6,9)]
-colnames(NAA_DEGs) <- c("locus", "short_name", "name", "aliases", "length",
-                        "fpkm_control", "tmm_control", "fpkm_NAA", "tmm_NAA",
-                        "log2FC_NAA", "pValue_NAA")
+NAA_DEGs$tmm_NAA <- tmm_NAA
+NAA_DEGs$tmmSE_NAA <- tmmSE_NAA
 
-saveRDS(NAA_DEGs, file="C:/Users/bca08_000/Documents/interactive-data/RNAseq/data/DEGs_PRJNA230565.rds")
+
+
+#NAA_DEGs <- NAA_DEGs[c(1:5,13,11,14,12,6,9)]
+#colnames(NAA_DEGs) <- c("locus", "short_name", "name", "aliases", "length",
+#                        "fpkm_control", "tmm_control", "fpkm_NAA", "tmm_NAA",
+#                        "log2FC_NAA", "pValue_NAA")
+
+# Limit decimal places written
+# formatC()
+
+#saveRDS(NAA_DEGs, file="C:/Users/Bryce/Documents/interactive-data/RNAseq/data/DEGs_PRJNA230565.rds")
