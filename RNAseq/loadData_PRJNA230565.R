@@ -10,9 +10,9 @@ library(edgeR)
 library(tibble)
 
 # Specify paths to data files
-justCounts <- "C:/Users/Bryce/Documents/Cyp79A2-RNAseq/data/PRJNA230565/expression_counts/"
-geneLengths <- "C:/Users/Bryce/Documents/Cyp79A2-RNAseq/data/PRJNA230565/gene_lengths.txt"
-araport11 <- read.csv("C:/Users/Bryce/Documents/Cyp79A2-RNAseq/data/Araport11.csv", header=FALSE)
+justCounts <- "C:/Users/bca08_000/Documents/Cyp79A2-RNAseq/data/PRJNA230565/expression_counts/"
+geneLengths <- "C:/Users/bca08_000/Documents/Cyp79A2-RNAseq/data/PRJNA230565/gene_lengths.txt"
+araport11 <- read.csv("C:/Users/bca08_000/Documents/Cyp79A2-RNAseq/data/Araport11.csv", header=FALSE)
 
 # Load gene expression and gene length data
 countFiles <- paste(justCounts, dir(justCounts), sep="")
@@ -98,12 +98,13 @@ NAA_DEGs$tmmSE_NAA <- tmmSE_NAA
 
 
 
-#NAA_DEGs <- NAA_DEGs[c(1:5,13,11,14,12,6,9)]
-#colnames(NAA_DEGs) <- c("locus", "short_name", "name", "aliases", "length",
-#                        "fpkm_control", "tmm_control", "fpkm_NAA", "tmm_NAA",
-#                        "log2FC_NAA", "pValue_NAA")
+NAA_DEGs <- NAA_DEGs[c(1:5,11:18,6,9)]
+colnames(NAA_DEGs) <- c("locus", "short_name", "name", "aliases", "length",
+                        "fpkm_control", "fpkmSE_control", "tmm_control", "tmmSE_control",
+                        "fpkm_NAA", "fpkmSE_NAA", "tmm_NAA", "tmmSE_NAA", "log2FC_NAA", "pValue_NAA")
 
 # Limit decimal places written
-# formatC()
-
-#saveRDS(NAA_DEGs, file="C:/Users/Bryce/Documents/interactive-data/RNAseq/data/DEGs_PRJNA230565.rds")
+for(col in 6:ncol(NAA_DEGs)){
+  NAA_DEGs[,col] <- as.numeric(formatC(NAA_DEGs[,col], width=5, format="G"))
+}
+saveRDS(NAA_DEGs, file="C:/Users/bca08_000/Documents/interactive-data/RNAseq/data/DEGs_PRJNA230565.rds")
