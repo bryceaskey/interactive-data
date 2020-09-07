@@ -1,7 +1,7 @@
 library(shiny)
 library(shinyjs)
 
-setwd("C:/Users/Bryce/Documents/interactive-data/RNAseq/")
+#setwd("C:/Users/Bryce/Documents/interactive-data/RNAseq/")
 
 library(dplyr)
 library(DT)
@@ -12,13 +12,13 @@ source("helpers.R")
 PRJNA549285_data <- readRDS("data/PRJNA549285.rds")
 PRJNA546251_data <- readRDS("data/PRJNA546251.rds")
 PRJNA230565_data <- readRDS("data/PRJNA230565.rds")
-PRJNA388948_data <- readRDS("data/PRJNA388948.rds")
+PRJNA388948_data <- readRDS("data/PRJNA388948_med5.rds")
 Cyp79A2_data <- readRDS("data/Cyp79A2.rds")
 
 
 ui <- navbarPage("RNAseq data viewer",
 # PRJNA549285 ui ----
-  tabPanel("PRJNA549285", # hy5
+  tabPanel("hy5", # hy5
     useShinyjs(),
     fluidRow(
       column(3, 
@@ -66,7 +66,7 @@ ui <- navbarPage("RNAseq data viewer",
   ), 
   
 # PRJNA546251 ui ----
-  tabPanel("PRJNA546251",
+  tabPanel("uvr8",
     useShinyjs(),
     fluidRow(
       column(3, 
@@ -115,7 +115,7 @@ ui <- navbarPage("RNAseq data viewer",
   ),
   
 # PRJNA230565 ui ---- 
-  tabPanel("PRJNA230565", # NAA treated
+  tabPanel("NAA treated", # NAA treated
     useShinyjs(),
     fluidRow(
       column(3, 
@@ -166,7 +166,7 @@ ui <- navbarPage("RNAseq data viewer",
     )    
   ), 
 # PRJNA388948 ui ----
-  tabPanel("PRJNA388948",
+  tabPanel("ref5/ref2",
   useShinyjs(),
   fluidRow(
     column(3, 
@@ -196,12 +196,15 @@ ui <- navbarPage("RNAseq data viewer",
         inline=FALSE,
         choices=list("WT"="WT",
                      "ref5"="ref5",
-                     "ref2"="ref2"),
-        selected=c("WT", "ref5", "ref2")
+                     "ref2"="ref2",
+                     "med5"="med5",
+                     "ref5med5"="ref5med5",
+                     "ref2med5"="ref2med5"),
+        selected=c("WT", "ref5", "ref2", "med5", "ref5med5", "ref2med5")
       )
     ),
     column(6,
-      plotOutput("PRJNA388948_genePlot", height="580px")
+      plotOutput("PRJNA388948_genePlot", height="650px")
     ),
     column(3,
       div(style="float:right; margin-bottom:20px",
@@ -336,7 +339,7 @@ server <- function(input, output, session){
   output$PRJNA549285_RNAseq.csv <- downloadHandler(
     filename=function(){paste("PRJNA549285_RNAseq", ".csv", sep="")},
     content=function(file){
-      write.csv(PRJNA549285_RD$selectedData[, c(1:3, getGenotypeCols2(input$PRJNA549285_selectedSamples, PRJNA="PRJNA549285"))], file, row.names=FALSE)
+      write.csv(PRJNA549285_RD$selectedData[, c(1:4, getGenotypeCols2(input$PRJNA549285_selectedSamples, PRJNA="PRJNA549285"))], file, row.names=FALSE)
     }
   )
   
@@ -451,7 +454,7 @@ server <- function(input, output, session){
   output$PRJNA546251_RNAseq.csv <- downloadHandler(
     filename=function(){paste("PRJNA546251_RNAseq", ".csv", sep="")},
     content=function(file){
-      write.csv(PRJNA546251_RD$selectedData[, c(1:3, getGenotypeCols2(input$PRJNA546251_selectedSamples, PRJNA="PRJNA546251"))], file, row.names=FALSE)
+      write.csv(PRJNA546251_RD$selectedData[, c(1:4, getGenotypeCols2(input$PRJNA546251_selectedSamples, PRJNA="PRJNA546251"))], file, row.names=FALSE)
     }
   )
   
@@ -550,6 +553,8 @@ server <- function(input, output, session){
       plotData$short_name <- factor(as.character(plotData$short_name), levels=PRJNA230565_RD$selectedData$short_name)
       print(ggplot(data=plotData, mapping=aes(x=short_name, y=exp, fill=sample)) +
               geom_col(position=position_dodge()) +
+              geom_errorbar(mapping=aes(ymin=exp-se, ymax=exp+se), color="black", width=0.2, position=position_dodge(0.9)) +
+              geom_text(mapping=aes(y=(exp+se)+(0.05*maxExp), label=signif), color="black", size=7, position=position_dodge(0.9)) +
               theme_bw() +
               labs(y=input$PRJNA230565_unit) +
               theme(axis.text=element_text(size=12),
@@ -565,7 +570,7 @@ server <- function(input, output, session){
   output$PRJNA230565_RNAseq.csv <- downloadHandler(
     filename=function(){paste("PRJNA230565_RNAseq", ".csv", sep="")},
     content=function(file){
-      write.csv(PRJNA230565_RD$selectedData[, c(1:3, getGenotypeCols2(input$PRJNA230565_selectedSamples, PRJNA="PRJNA230565", unit=input$PRJNA230565_unit))], file, row.names=FALSE)
+      write.csv(PRJNA230565_RD$selectedData[, c(1:4, getGenotypeCols2(input$PRJNA230565_selectedSamples, PRJNA="PRJNA230565", unit=input$PRJNA230565_unit))], file, row.names=FALSE)
     }
   )
   
@@ -608,6 +613,8 @@ server <- function(input, output, session){
       plotData$short_name <- factor(as.character(plotData$short_name), levels=PRJNA230565_RD$selectedData$short_name)
       ggplot(data=plotData, mapping=aes(x=short_name, y=exp, fill=sample)) +
         geom_col(position=position_dodge()) +
+        geom_errorbar(mapping=aes(ymin=exp-se, ymax=exp+se), color="black", width=0.2, position=position_dodge(0.9)) +
+        geom_text(mapping=aes(y=(exp+se)+(0.05*maxExp), label=signif), color="black", size=7, position=position_dodge(0.9)) +
         theme_bw() +
         labs(y=input$PRJNA230565_unit) +
         theme(axis.text=element_text(size=12),
@@ -657,10 +664,12 @@ server <- function(input, output, session){
     filename=function(){paste("PRJNA388948_RNAseq", ".pdf", sep="")},
     content=function(file){pdf(file, height=6, width=12)
       plotData <- convertToTidy(PRJNA388948_RD$selectedData, input$PRJNA388948_selectedSamples, PRJNA="PRJNA388948", unit=input$PRJNA388948_unit)
-      plotData$sample <- factor(as.character(plotData$sample), levels=c("WT", "ref5", "ref2"))
+      plotData$sample <- factor(as.character(plotData$sample), levels=c("WT", "ref5", "ref2", "med5", "ref5med5", "ref2med5"))
       plotData$short_name <- factor(as.character(plotData$short_name), levels=PRJNA388948_RD$selectedData$short_name)
       print(ggplot(data=plotData, mapping=aes(x=short_name, y=exp, fill=sample)) +
               geom_col(position=position_dodge()) +
+              geom_errorbar(mapping=aes(ymin=exp-se, ymax=exp+se), color="black", width=0.2, position=position_dodge(0.9)) +
+              geom_text(mapping=aes(y=(exp+se)+(0.05*maxExp), label=signif), color="black", size=7, position=position_dodge(0.9)) +
               theme_bw() +
               labs(y=input$PRJNA388948_unit) +
               theme(axis.text=element_text(size=12),
@@ -676,7 +685,7 @@ server <- function(input, output, session){
   output$PRJNA388948_RNAseq.csv <- downloadHandler(
     filename=function(){paste("PRJNA388948_RNAseq", ".csv", sep="")},
     content=function(file){
-      write.csv(PRJNA388948_RD$selectedData[, c(1:3, getGenotypeCols2(input$PRJNA388948_selectedSamples, PRJNA="PRJNA388948", unit=input$PRJNA388948_unit))], file, row.names=FALSE)
+      write.csv(PRJNA388948_RD$selectedData[, c(1:4, getGenotypeCols2(input$PRJNA388948_selectedSamples, PRJNA="PRJNA388948", unit=input$PRJNA388948_unit))], file, row.names=FALSE)
     }
   )
   
@@ -687,7 +696,7 @@ server <- function(input, output, session){
       paging=FALSE,
       dom="rti",
       autoWidth=TRUE,
-      scrollY="470px",
+      scrollY="540px",
       searchCols=PRJNA388948_default_search_columns,
       stateSave=FALSE
     )
@@ -715,10 +724,12 @@ server <- function(input, output, session){
   output$PRJNA388948_genePlot <- renderPlot({
     if(!is.null(PRJNA388948_RD$selectedData)){
       plotData <- convertToTidy(PRJNA388948_RD$selectedData, input$PRJNA388948_selectedSamples, PRJNA="PRJNA388948", unit=input$PRJNA388948_unit)
-      plotData$sample <- factor(as.character(plotData$sample), levels=c("WT", "ref5", "ref2"))
+      plotData$sample <- factor(as.character(plotData$sample), levels=c("WT", "ref5", "ref2", "med5", "ref5med5", "ref2med5"))
       plotData$short_name <- factor(as.character(plotData$short_name), levels=PRJNA388948_RD$selectedData$short_name)
       ggplot(data=plotData, mapping=aes(x=short_name, y=exp, fill=sample)) +
         geom_col(position=position_dodge()) +
+        geom_errorbar(mapping=aes(ymin=exp-se, ymax=exp+se), color="black", width=0.2, position=position_dodge(0.9)) +
+        geom_text(mapping=aes(y=(exp+se)+(0.05*maxExp), label=signif), color="black", size=7, position=position_dodge(0.9)) +
         theme_bw() +
         labs(y=input$PRJNA388948_unit) +
         theme(axis.text=element_text(size=12),
@@ -772,6 +783,8 @@ server <- function(input, output, session){
       plotData$short_name <- factor(as.character(plotData$short_name), levels=Cyp79A2_RD$selectedData$short_name)
       print(ggplot(data=plotData, mapping=aes(x=short_name, y=exp, fill=sample)) +
               geom_col(position=position_dodge()) +
+              geom_errorbar(mapping=aes(ymin=exp-se, ymax=exp+se), color="black", width=0.2, position=position_dodge(0.9)) +
+              geom_text(mapping=aes(y=(exp+se)+(0.05*maxExp), label=signif), color="black", size=7, position=position_dodge(0.9)) +
               theme_bw() +
               labs(y=input$Cyp79A2_unit) +
               theme(axis.text=element_text(size=12),
@@ -787,7 +800,7 @@ server <- function(input, output, session){
   output$Cyp79A2_RNAseq.csv <- downloadHandler(
     filename=function(){paste("Cyp79A2_RNAseq", ".csv", sep="")},
     content=function(file){
-      write.csv(Cyp79A2_RD$selectedData[, c(1:3, getGenotypeCols2(input$Cyp79A2_selectedSamples, PRJNA="Cyp79A2", unit=input$Cyp79A2_unit))], file, row.names=FALSE)
+      write.csv(Cyp79A2_RD$selectedData[, c(1:4, getGenotypeCols2(input$Cyp79A2_selectedSamples, PRJNA="Cyp79A2", unit=input$Cyp79A2_unit))], file, row.names=FALSE)
     }
   )
   
@@ -830,6 +843,8 @@ server <- function(input, output, session){
       plotData$short_name <- factor(as.character(plotData$short_name), levels=Cyp79A2_RD$selectedData$short_name)
       ggplot(data=plotData, mapping=aes(x=short_name, y=exp, fill=sample)) +
         geom_col(position=position_dodge()) +
+        geom_errorbar(mapping=aes(ymin=exp-se, ymax=exp+se), color="black", width=0.2, position=position_dodge(0.9)) +
+        geom_text(mapping=aes(y=(exp+se)+(0.05*maxExp), label=signif), color="black", size=7, position=position_dodge(0.9)) +
         theme_bw() +
         labs(y=input$Cyp79A2_unit) +
         theme(axis.text=element_text(size=12),

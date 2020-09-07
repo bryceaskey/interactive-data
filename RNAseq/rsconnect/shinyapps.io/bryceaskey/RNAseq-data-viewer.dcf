@@ -5,9 +5,9 @@ account: bryceaskey
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 2726909
-bundleId: 3574260
+bundleId: 3602960
 url: https://bryceaskey.shinyapps.io/RNAseq-data-viewer/
-when: 1598842969.83057
+when: 1599495895.98057
 asMultiple: FALSE
 asStatic: FALSE
 ignoredFiles: loadData_Cyp79A2.R|loadData_PRJNA230565.R|loadData_PRJNA388948.R

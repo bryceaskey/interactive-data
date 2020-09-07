@@ -54,11 +54,33 @@ convertToTidy <- function(data, selectedSamples, PRJNA, unit=NULL){
     for(sample in selectedSamples){
       sampleData <- data[, 1:4]
       meanColName <- paste(unit, "_", sample, sep="")
-      print(meanColName)
       meanCol <- data[, colnames(data)==meanColName]
-      sampleData$exp <- meanCol
+      seColName <- paste(unit, "SE_", sample, sep="")
+      seCol <- data[, colnames(data)==seColName]
+      pColName <- paste("pValue_", sample, sep="")
+      pCol <- data[, colnames(data)==pColName]
+      if(unit=="tmm" & sample != "control" & sample != "WT"){
+        signifCol <- NULL
+        for(pVal in pCol){
+          if(pVal < 0.001){
+            signifCol <- c(signifCol, "***")
+          }else if(pVal < 0.01){
+            signifCol <- c(signifCol, "**")
+          }else if(pVal < 0.05){
+            signifCol <- c(signifCol, "*")
+          }else{
+            signifCol <- c(signifCol, NA)
+          }
+        }
+      }else{
+        signifCol <- rep(NA, length(meanCol))
+        
+      }
       sampleData$sample <- sample
-      print(tidyData)
+      sampleData$exp <- meanCol
+      sampleData$maxExp <- max(sampleData$exp)
+      sampleData$se <- seCol
+      sampleData$signif <- signifCol
       tidyData <- rbind(tidyData, sampleData)        
     }
     return(tidyData)
@@ -85,34 +107,40 @@ getGenotypeCols <- function(selectedSamples, PRJNA, unit=NULL){
     genotypeCols <- vector(mode="numeric", length=0)
     if(unit=="fpkm"){
       if(sum(selectedSamples=="control")==1){genotypeCols <- append(genotypeCols, 6)}
-      if(sum(selectedSamples=="NAA")==1){genotypeCols <- append(genotypeCols, 8)}
+      if(sum(selectedSamples=="NAA")==1){genotypeCols <- append(genotypeCols, 10)}
     }else if(unit=="tmm"){
-      if(sum(selectedSamples=="control")==1){genotypeCols <- append(genotypeCols, 7)}
-      if(sum(selectedSamples=="NAA")==1){genotypeCols <- append(genotypeCols, c(9,10,11))}
+      if(sum(selectedSamples=="control")==1){genotypeCols <- append(genotypeCols, 8)}
+      if(sum(selectedSamples=="NAA")==1){genotypeCols <- append(genotypeCols, c(12,14))}
     }
     return(genotypeCols)
   }else if(PRJNA=="PRJNA388948"){
     genotypeCols <- vector(mode="numeric", length=0)
     if(unit=="fpkm"){
       if(sum(selectedSamples=="WT")==1){genotypeCols <- append(genotypeCols, 6)}
-      if(sum(selectedSamples=="ref5")==1){genotypeCols <- append(genotypeCols, 8)}
-      if(sum(selectedSamples=="ref2")==1){genotypeCols <- append(genotypeCols, 12)}
+      if(sum(selectedSamples=="ref5")==1){genotypeCols <- append(genotypeCols, 10)}
+      if(sum(selectedSamples=="ref2")==1){genotypeCols <- append(genotypeCols, 16)}
+      if(sum(selectedSamples=="med5")==1){genotypeCols <- append(genotypeCols, 22)}
+      if(sum(selectedSamples=="ref5med5")==1){genotypeCols <- append(genotypeCols, 28)}
+      if(sum(selectedSamples=="ref2med5")==1){genotypeCols <- append(genotypeCols, 34)}
     }else if(unit=="tmm"){
-      if(sum(selectedSamples=="WT")==1){genotypeCols <- append(genotypeCols, 7)}
-      if(sum(selectedSamples=="ref5")==1){genotypeCols <- append(genotypeCols, c(9,11))}
-      if(sum(selectedSamples=="ref5")==1){genotypeCols <- append(genotypeCols, c(13,15))}
+      if(sum(selectedSamples=="WT")==1){genotypeCols <- append(genotypeCols, 8)}
+      if(sum(selectedSamples=="ref5")==1){genotypeCols <- append(genotypeCols, 12)}
+      if(sum(selectedSamples=="ref5")==1){genotypeCols <- append(genotypeCols, 18)}
+      if(sum(selectedSamples=="med5")==1){genotypeCols <- append(genotypeCols, 24)}
+      if(sum(selectedSamples=="ref5med5")==1){genotypeCols <- append(genotypeCols, 30)}
+      if(sum(selectedSamples=="ref2med5")==1){genotypeCols <- append(genotypeCols, 36)}
     }
     return(genotypeCols)
   }else if(PRJNA=="Cyp79A2"){
     genotypeCols <- vector(mode="numeric", length=0)
     if(unit=="fpkm"){
       if(sum(selectedSamples=="WT")==1){genotypeCols <- append(genotypeCols, 6)}
-      if(sum(selectedSamples=="PAOx")==1){genotypeCols <- append(genotypeCols, 8)}
-      if(sum(selectedSamples=="Cyp79A2")==1){genotypeCols <- append(genotypeCols, 12)}
+      if(sum(selectedSamples=="PAOx")==1){genotypeCols <- append(genotypeCols, 10)}
+      if(sum(selectedSamples=="Cyp79A2")==1){genotypeCols <- append(genotypeCols, 16)}
     }else if(unit=="tmm"){
-      if(sum(selectedSamples=="WT")==1){genotypeCols <- append(genotypeCols, 7)}
-      if(sum(selectedSamples=="PAOx")==1){genotypeCols <- append(genotypeCols, c(9,11))}
-      if(sum(selectedSamples=="Cyp79A2")==1){genotypeCols <- append(genotypeCols, c(13,15))}
+      if(sum(selectedSamples=="WT")==1){genotypeCols <- append(genotypeCols, 8)}
+      if(sum(selectedSamples=="PAOx")==1){genotypeCols <- append(genotypeCols, c(12,14))}
+      if(sum(selectedSamples=="Cyp79A2")==1){genotypeCols <- append(genotypeCols, c(18,20))}
     }
     return(genotypeCols)
   }
@@ -135,13 +163,13 @@ getGenotypeCols2 <- function(selectedSamples, PRJNA, unit=NULL){
     if(sum(selectedSamples=="uvr8_WL_UVB6h")==1){genotypeCols <- append(genotypeCols, c(11, 12))}
     return(genotypeCols)
   }else if(PRJNA=="PRJNA230565"){
-    genotypeCols <- c(6:11)
+    genotypeCols <- c(6:15)
     return(genotypeCols)
   }else if(PRJNA=="PRJNA388948"){
-    genotypeCols <- c(6:15)
+    genotypeCols <- c(6:39)
     return(genotypeCols)
   }else if(PRJNA=="Cyp79A2"){
-    genotypeCols <- c(6:15)
+    genotypeCols <- c(6:21)
     return(genotypeCols)
   }
 }
